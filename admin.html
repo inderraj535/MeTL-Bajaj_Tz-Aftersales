@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Dashboard | Bajaj Customer Hub</title>
+<style>
+  :root { --blue:#0a3d91; --bg:#f4f7fb; --text:#1d2733; --muted:#6b7785; --border:#d5dde8; --danger:#c62828; --ok:#2e7d32; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+  header { background:var(--blue); color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+  header h1 { margin:0; font-size:18px; }
+  main { padding:16px; max-width:1200px; margin:0 auto; }
+  .hidden { display:none !important; }
+  .login { max-width:360px; margin:60px auto; background:#fff; padding:24px; border-radius:14px; box-shadow:0 4px 18px rgba(10,61,145,.08); }
+  .login h2 { margin:0 0 12px; color:var(--blue); }
+  input, select { padding:9px 10px; border:1px solid var(--border); border-radius:8px; font:inherit; background:#fff; }
+  input[type=text], input[type=password], input[type=search] { width:100%; }
+  button { padding:9px 14px; border:none; border-radius:8px; background:var(--blue); color:#fff; font:inherit; font-weight:600; cursor:pointer; }
+  button.ghost { background:#fff; color:var(--blue); border:1px solid var(--blue); }
+  button.sm { padding:5px 10px; font-size:12px; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:16px; }
+  .stat { background:#fff; border-radius:12px; padding:14px; box-shadow:0 2px 10px rgba(10,61,145,.06); }
+  .stat .n { font-size:24px; font-weight:700; color:var(--blue); }
+  .stat .l { color:var(--muted); font-size:12px; }
+  .stat.alert .n { color:var(--danger); }
+
+  .tabs { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+  .tabs button { background:#fff; color:var(--blue); border:1px solid var(--blue); }
+  .tabs button.on { background:var(--blue); color:#fff; }
+
+  .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
+  .toolbar input[type=search] { flex:1 1 220px; }
+
+  .table-wrap { background:#fff; border-radius:12px; overflow:auto; box-shadow:0 2px 10px rgba(10,61,145,.06); }
+  table { width:100%; border-collapse:collapse; min-width:700px; }
+  th, td { padding:10px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+  th { background:#eef3fa; font-size:12px; text-transform:uppercase; letter-spacing:.3px; color:var(--muted); position:sticky; top:0; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:20px; font-size:12px; background:#eef1f5; }
+  .pill.Open, .pill.New { background:#fde8e8; color:var(--danger); }
+  .pill.InProgress, .pill.Confirmed { background:#fff4d6; color:#8a6100; }
+  .pill.Resolved, .pill.Done { background:#e6f4ea; color:var(--ok); }
+  .pill.High { background:#fde8e8; color:var(--danger); }
+  .muted { color:var(--muted); }
+  .err { color:var(--danger); margin-top:8px; min-height:18px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bajaj Customer Hub: Admin</h1>
+  <button class="ghost hidden" id="logoutBtn" style="background:#fff;color:var(--blue)">Log out</button>
+</header>
+
+<!-- LOGIN -->
+<section class="login" id="loginView">
+  <h2>Sign in</h2>
+  <p class="muted">Enter the admin token.</p>
+  <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="current-password" style="width:100%">
+  <button id="loginBtn" style="width:100%;margin-top:12px">Unlock dashboard</button>
+  <div class="err" id="loginErr"></div>
+</section>
+
+<!-- DASHBOARD -->
+<main class="hidden" id="dashView">
+  <div class="stats">
+    <div class="stat"><div class="n" id="s_appt">0</div><div class="l">Appointments (total)</div></div>
+    <div class="stat"><div class="n" id="s_today">0</div><div class="l">Appointments today</div></div>
+    <div class="stat"><div class="n" id="s_newAppt">0</div><div class="l">New bookings to confirm</div></div>
+    <div class="stat"><div class="n" id="s_comp">0</div><div class="l">Complaints (total)</div></div>
+    <div class="stat alert"><div class="n" id="s_open">0</div><div class="l">Open complaints</div></div>
+    <div class="stat alert"><div class="n" id="s_high">0</div><div class="l">High priority open</div></div>
+    <div class="stat"><div class="n" id="s_garages">0</div><div class="l">Garages listed</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="on" data-tab="appointments">Appointments</button>
+    <button data-tab="complaints">Complaints</button>
+    <button data-tab="garages">Garages</button>
+    <button class="ghost" id="reloadBtn" style="margin-left:auto">↻ Refresh</button>
+  </div>
+
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Search name, phone, registration, branch…">
+    <select id="statusFilter"><option value="">All statuses</option></select>
+    <button class="ghost" id="exportBtn">⬇️ Export CSV</button>
+    <button class="ghost" id="waBtn">📲 Share open on WhatsApp</button>
+  </div>
+
+  <div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  <p class="muted" id="count"></p>
+</main>
+
+<script>
+/* =====================================================
+   CONFIGURATION — same /exec URL as the customer app
+   ===================================================== */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyFKasKmhhTYJoaN-IN0w_Vw1tBoXsWwtwFSUGRMqvShhCZUXFIqPk0kF00S0sVseQe/exec";
+const WHATSAPP_NUMBER = "255704904011"; // team WhatsApp, international format without +
+
+const STATUS = {
+  appointments: ["New", "Confirmed", "Done", "Cancelled"],
+  complaints: ["Open", "In Progress", "Resolved"]
+};
+const COLUMNS = {
+  appointments: [
+    ["timestamp", "Received"], ["name", "Name"], ["phone", "Phone"], ["model", "Model"],
+    ["registration", "Reg. no."], ["branch", "Branch"], ["date", "Date"], ["time", "Time"],
+    ["serviceType", "Service"], ["notes", "Notes"], ["status", "Status"]
+  ],
+  complaints: [
+    ["timestamp", "Received"], ["id", "Ticket"], ["name", "Customer"], ["phone", "Phone"],
+    ["vehicleType", "Vehicle"], ["model", "Model"], ["registration", "Reg. no."],
+    ["category", "Category"], ["priority", "Priority"], ["description", "Problem"],
+    ["assignedTo", "Assigned to"], ["status", "Status"]
+  ],
+  garages: [["name", "Garage"], ["type", "Type"], ["phone", "Phone"], ["area", "Area"], ["address", "Address"], ["active", "Active"]]
+};
+const ASSIGNEES = ["Unassigned", "Prem", "Nasim", "Vishnu", "Raju", "Jitender"];
+
+let token = "";
+let data = { appointments: [], complaints: [], garages: [] };
+let tab = "appointments";
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const today = () => {
+  const d = new Date(), p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
+
+/* ---------- Login ---------- */
+async function load() {
+  const r = await fetch(`${APPS_SCRIPT_URL}?action=admin&token=${encodeURIComponent(token)}`);
+  const res = await r.json();
+  if (!res.ok) throw new Error(res.error === "unauthorized" ? "Wrong token." : "Could not load data.");
+  data = { appointments: res.appointments, complaints: res.complaints, garages: res.garages };
+}
+
+$("loginBtn").addEventListener("click", async () => {
+  token = $("tokenInput").value.trim();
+  $("loginErr").textContent = "Checking…";
+  try {
+    await load();
+    $("loginErr").textContent = "";
+    $("loginView").classList.add("hidden");
+    $("dashView").classList.remove("hidden");
+    $("logoutBtn").classList.remove("hidden");
+    setupTab("appointments");
+    renderStats();
+  } catch (err) {
+    token = "";
+    $("loginErr").textContent = err.message;
+  }
+});
+$("tokenInput").addEventListener("keydown", (e) => e.key === "Enter" && $("loginBtn").click());
+$("logoutBtn").addEventListener("click", () => location.reload());
+
+$("reloadBtn").addEventListener("click", async () => {
+  $("reloadBtn").textContent = "Loading…";
+  try { await load(); renderStats(); render(); } finally { $("reloadBtn").textContent = "↻ Refresh"; }
+});
+
+/* ---------- Stats ---------- */
+function renderStats() {
+  const a = data.appointments, c = data.complaints;
+  const open = c.filter((x) => x.status !== "Resolved");
+  $("s_appt").textContent = a.length;
+  $("s_today").textContent = a.filter((x) => x.date === today()).length;
+  $("s_newAppt").textContent = a.filter((x) => x.status === "New").length;
+  $("s_comp").textContent = c.length;
+  $("s_open").textContent = open.length;
+  $("s_high").textContent = open.filter((x) => x.priority === "High").length;
+  $("s_garages").textContent = data.garages.length;
+}
+
+/* ---------- Tabs, search, filters ---------- */
+document.querySelectorAll("[data-tab]").forEach((b) =>
+  b.addEventListener("click", () => setupTab(b.dataset.tab))
+);
+function setupTab(t) {
+  tab = t;
+  document.querySelectorAll("[data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
+  const sf = $("statusFilter");
+  const statuses = STATUS[t] || [];
+  sf.innerHTML = `<option value="">All statuses</option>` + statuses.map((s) => `<option>${s}</option>`).join("");
+  sf.classList.toggle("hidden", !statuses.length);
+  $("waBtn").classList.toggle("hidden", t !== "complaints");
+  $("search").value = "";
+  render();
+}
+$("search").addEventListener("input", render);
+$("statusFilter").addEventListener("change", render);
+
+function filtered() {
+  const q = $("search").value.trim().toLowerCase();
+  const st = $("statusFilter").value;
+  return data[tab].filter((r) => {
+    if (st && r.status !== st) return false;
+    if (!q) return true;
+    return Object.values(r).join(" ").toLowerCase().includes(q);
+  });
+}
+
+/* ---------- Rendering ---------- */
+function render() {
+  const cols = COLUMNS[tab];
+  const rows = filtered();
+  const hasStatus = !!STATUS[tab];
+
+  $("thead").innerHTML = "<tr>" + cols.map((c) => `<th>${c[1]}</th>`).join("") + (tab === "complaints" ? "<th>Action</th>" : "") + "</tr>";
+
+  $("tbody").innerHTML = rows.map((r) => {
+    const cells = cols.map(([key]) => {
+      let v = r[key];
+      if (key === "status" && hasStatus) return `<td>${statusSelect(r, v)}</td>`;
+      if (key === "assignedTo" && tab === "complaints") return `<td>${assignSelect(r, v)}</td>`;
+      if (key === "priority") return `<td><span class="pill ${esc(v)}">${esc(v)}</span></td>`;
+      if (key === "phone" && v) return `<td><a href="tel:${esc(String(v).replace(/\s+/g, ""))}">${esc(v)}</a></td>`;
+      return `<td>${esc(v)}</td>`;
+    }).join("");
+    const extra = tab === "complaints" ? `<td><button class="sm ghost" onclick="copyTicket('${esc(r.id)}')">Copy</button></td>` : "";
+    return `<tr>${cells}${extra}</tr>`;
+  }).join("") || `<tr><td colspan="${cols.length + 1}" class="muted">No records found.</td></tr>`;
+
+  $("count").textContent = `${rows.length} of ${data[tab].length} shown`;
+}
+
+function statusSelect(r, v) {
+  const id = tab === "appointments" ? r.id : r.id;
+  return `<select onchange="updateField('${esc(id)}','status',this.value,this)">
+    ${STATUS[tab].map((s) => `<option ${s === v ? "selected" : ""}>${s}</option>`).join("")}
+  </select>`;
+}
+function assignSelect(r, v) {
+  return `<select onchange="updateField('${esc(r.id)}','assignedTo',this.value,this)">
+    ${ASSIGNEES.map((s) => `<option ${s === v ? "selected" : ""}>${s}</option>`).join("")}
+  </select>`;
+}
+
+/* ---------- Updates ---------- */
+async function updateField(id, field, value, el) {
+  el.disabled = true;
+  try {
+    const r = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "update", token, sheet: tab, id, fields: { [field]: value } })
+    });
+    const res = await r.json();
+    if (!res.ok) throw new Error(res.error);
+    const row = data[tab].find((x) => x.id === id);
+    if (row) row[field] = value;
+    renderStats();
+  } catch (err) {
+    alert("Could not save the change. Please try again.");
+    await load().catch(() => {});
+    render();
+  } finally {
+    el.disabled = false;
+  }
+}
+
+/* ---------- Export and sharing ---------- */
+function toCSV(rows, cols) {
+  const head = cols.map((c) => `"${c[1]}"`).join(",");
+  const body = rows.map((r) => cols.map(([k]) => `"${String(r[k] ?? "").replace(/"/g, '""')}"`).join(","));
+  return [head, ...body].join("\n");
+}
+$("exportBtn").addEventListener("click", () => {
+  const csv = "\uFEFF" + toCSV(filtered(), COLUMNS[tab]); // BOM so Excel reads Swahili text correctly
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url; a.download = `${tab}-${today()}.csv`; a.click();
+  URL.revokeObjectURL(url);
+});
+
+$("waBtn").addEventListener("click", () => {
+  const open = data.complaints.filter((c) => c.status !== "Resolved");
+  if (!open.length) return alert("No open complaints.");
+  const lines = open.map((c) =>
+    `• ${c.id} | ${c.priority} | ${c.model} | ${c.registration || "-"} | ${c.category} | ${c.assignedTo || "Unassigned"} | ${c.status}`
+  );
+  const msg = `Open helpdesk tickets (${open.length}):\n` + lines.join("\n");
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
+});
+
+function copyTicket(id) {
+  navigator.clipboard?.writeText(id);
+}
+</script>
+</body>
+</html>
