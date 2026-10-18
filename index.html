@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b5cad">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Bajaj Customer Hub | METL Group</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --blue: #0a3d91; --blue-dark: #072a66; --blue-soft: #e9f1fc;
+    --green: #1f9d55; --green-soft: #e7f6ee;
+    --amber: #c77700; --amber-soft: #fff4df;
+    --bg: #f3f6fb; --card: #ffffff; --text: #17202c; --muted: #66727f;
+    --border: #e4eaf3; --danger: #c62828; --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5;
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    -webkit-font-smoothing: antialiased;
+  }
+  i.ti { line-height: 1; }
+
+  /* Header */
+  header {
+    background: linear-gradient(160deg, var(--blue) 0%, var(--blue-dark) 100%);
+    color: #fff; padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 46px;
+    position: relative;
+  }
+  .top { display: flex; align-items: center; gap: 12px; max-width: 620px; margin: 0 auto; }
+  .top img { width: 44px; height: 44px; border-radius: 12px; background: #fff; padding: 4px; object-fit: contain; }
+  .top .brand { font-size: 11px; letter-spacing: 1.2px; opacity: .8; font-weight: 600; text-transform: uppercase; }
+  .top h1 { margin: 2px 0 0; font-size: 19px; font-weight: 600; }
+
+  main { max-width: 620px; margin: -30px auto 0; padding: 0 16px; }
+  .view { display: none; }
+  .view.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .card {
+    background: var(--card); border-radius: var(--radius); border: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(10, 61, 145, .07); padding: 20px; margin-bottom: 16px;
+  }
+  .card h2 { margin: 0 0 16px; font-size: 18px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .card h2 i { color: var(--blue); font-size: 20px; }
+  .muted { color: var(--muted); font-size: 13px; }
+
+  /* Home */
+  .hero { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(10,61,145,.07); padding: 20px; margin-bottom: 16px; }
+  .hero h2 { margin: 0 0 6px; font-size: 19px; font-weight: 600; }
+  .hero p { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+  .hero .cta {
+    display: inline-flex; align-items: center; gap: 8px; background: var(--blue); color: #fff; border: 0;
+    padding: 12px 18px; border-radius: 12px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  .menu { display: grid; gap: 12px; }
+  .menu button {
+    display: flex; align-items: center; gap: 16px; text-align: left; width: 100%;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px; cursor: pointer; font: inherit; color: inherit;
+    box-shadow: 0 2px 8px rgba(10,61,145,.04); transition: transform .12s, box-shadow .12s;
+  }
+  .menu button:active { transform: scale(.985); }
+  .menu .ico {
+    width: 52px; height: 52px; border-radius: 14px; flex: 0 0 52px;
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+  .menu .ico.blue { background: var(--blue-soft); color: var(--blue); }
+  .menu .ico.green { background: var(--green-soft); color: var(--green); }
+  .menu .ico.amber { background: var(--amber-soft); color: var(--amber); }
+  .menu strong { display: block; font-size: 16px; font-weight: 600; }
+  .menu span { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .menu .chev { margin-left: auto; color: #aab4c2; font-size: 20px; }
+
+  /* Forms */
+  label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 6px; color: #2b3644; }
+  label .req { color: var(--danger); }
+  input, select, textarea {
+    width: 100%; padding: 12px 14px; font-size: 16px; font-family: inherit;
+    border: 1px solid #d5ddea; border-radius: 12px; background: #fff; color: var(--text);
+    height: 48px; appearance: none; -webkit-appearance: none;
+  }
+  select { background-image: linear-gradient(45deg, transparent 50%, #7b8794 50%), linear-gradient(135deg, #7b8794 50%, transparent 50%);
+    background-position: calc(100% - 20px) 21px, calc(100% - 15px) 21px; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 36px; }
+  textarea { height: auto; min-height: 88px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent, #1ea7e1); box-shadow: 0 0 0 4px rgba(30,167,225,.15); }
+  select:disabled, input:disabled { background-color: #f1f4f8; color: #9aa5b3; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 420px) { .row { grid-template-columns: 1fr; } }
+
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  .seg label {
+    margin: 0; font-weight: 600; border: 1.5px solid #d5ddea; border-radius: 12px; padding: 14px 10px;
+    text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .seg input { display: none; }
+  .seg label:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+
+  .btn {
+    width: 100%; margin-top: 22px; height: 52px; font-size: 16px; font-weight: 600;
+    color: #fff; background: var(--blue); border: 0; border-radius: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 6px 16px rgba(10,61,145,.25);
+  }
+  .btn:active { transform: scale(.99); }
+  .btn:disabled { background: #9aa8bc; box-shadow: none; }
+
+  /* Garages */
+  .search { position: relative; }
+  .search i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #8a96a6; font-size: 18px; }
+  .search input { padding-left: 42px; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 14px 0 4px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto; padding: 8px 16px; border-radius: 999px; border: 1px solid #d5ddea;
+    background: #fff; font: inherit; font-size: 14px; cursor: pointer; color: var(--text);
+  }
+  .chip.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .garage {
+    display: flex; align-items: center; gap: 12px; padding: 14px 4px; border-bottom: 1px solid var(--border);
+  }
+  .garage:last-child { border-bottom: 0; }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 12px; flex: 0 0 42px; display: flex;
+    align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
+  }
+  .avatar.Bajaji { background: var(--blue-soft); color: var(--blue); }
+  .avatar.Piki { background: var(--amber-soft); color: var(--amber); }
+  .garage .info { flex: 1; min-width: 0; }
+  .garage .name { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .garage .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-right: 4px; }
+  .tag.Bajaji { background: var(--blue-soft); color: var(--blue); }
+  .tag.Piki { background: var(--amber-soft); color: var(--amber); }
+  .callbtn {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--green-soft); color: var(--green);
+    text-decoration: none; padding: 9px 14px; border-radius: 12px; font-weight: 600; font-size: 14px; white-space: nowrap;
+  }
+  .empty { text-align: center; color: var(--muted); padding: 24px 0; }
+  .garage-head { display: flex; align-items: center; gap: 12px; margin: 4px 4px 14px; }
+  .metl-logo { height: 42px; max-width: 150px; object-fit: contain; }
+  .garage-title { margin: 0; font-size: 20px; font-weight: 700; color: #0b5cad; }
+  .search .clear {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px;
+    border: 0; border-radius: 50%; background: #eef2f7; color: #55606e; font-size: 18px; cursor: pointer;
+    display: none; align-items: center; justify-content: center; padding: 0; line-height: 1;
+  }
+  .search.has-text .clear { display: flex; }
+  .search input { padding-right: 46px; }
+  .nums { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .num {
+    display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+    background: #e9f1fc; color: #0b5cad; font-weight: 600; font-size: 13px;
+    padding: 5px 10px; border-radius: 999px;
+  }
+  .hint { text-align: center; color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+
+  /* Success */
+  .done { text-align: center; padding: 32px 12px; }
+  .done .tick {
+    width: 68px; height: 68px; border-radius: 50%; background: var(--green-soft); color: var(--green);
+    display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto 14px;
+  }
+  .done h2 { justify-content: center; margin-bottom: 8px; }
+  .link-btn {
+    margin-top: 18px; background: var(--blue-soft); border: 0; color: var(--blue); padding: 12px 20px;
+    border-radius: 12px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  .hidden { display: none !important; }
+
+  /* Bottom navigation */
+  nav.tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.96);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 10;
+  }
+  nav.tabs button {
+    background: none; border: 0; font: inherit; font-size: 11.5px; color: var(--muted);
+    display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; cursor: pointer; border-radius: 12px;
+  }
+  nav.tabs button i { font-size: 22px; }
+  nav.tabs button.active { color: var(--blue); font-weight: 600; }
+  nav.tabs button.active i { background: var(--blue-soft); border-radius: 10px; padding: 4px 14px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
+    background: #17202c; color: #fff; padding: 12px 18px; border-radius: 12px;
+    font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .3s; max-width: 90%; text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  }
+  .toast.show { opacity: 1; }
+
+  /* Garage finder (scoped) */
+  .gf { margin: 0 -16px; background: #f2f4f7; min-height: 100vh; }
+  .gf-head { background: #0b5cad; color: #fff; padding: 14px 16px 12px; position: sticky; top: 0; z-index: 5; }
+  .gf-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .gf-brand img { height: 44px; width: auto; background: #fff; border-radius: 8px; padding: 4px 6px; flex: 0 0 auto; }
+  .gf-brand h1 { font-size: 18px; margin: 0; font-weight: 700; line-height: 1.2; }
+  .gf-search { position: relative; }
+  .gf-search input { width: 100%; height: 46px; font-size: 16px; padding: 12px 42px 12px 14px; border: 0; border-radius: 10px; background: #fff; color: #16202c; outline: none; }
+  .gf-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: 0; font-size: 22px; color: #5f6b7a; padding: 6px 10px; cursor: pointer; display: none; line-height: 1; }
+  .gf-clear.show { display: block; }
+  .gf-seg { display: flex; background: rgba(255,255,255,.18); border-radius: 10px; padding: 3px; margin-top: 10px; }
+  .gf-seg button { flex: 1; border: 0; background: transparent; color: #fff; padding: 9px 4px; font-size: 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: inherit; }
+  .gf-seg button.on { background: #fff; color: #084a8c; }
+  .gf-chips { display: flex; gap: 8px; overflow-x: auto; padding: 12px 16px 4px; scrollbar-width: none; }
+  .gf-chips::-webkit-scrollbar { display: none; }
+  .gf-chip { flex: 0 0 auto; border: 1px solid #e2e6ec; background: #fff; color: #16202c; padding: 7px 13px; border-radius: 999px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .gf-chip.on { background: #0b5cad; border-color: #0b5cad; color: #fff; }
+  .gf-count { padding: 8px 16px 6px; font-size: 13px; color: #5f6b7a; }
+  .gf-list { padding: 0 16px 8px; }
+  .gf-card { background: #fff; border: 1px solid #e2e6ec; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .gf-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .gf-name { font-weight: 700; font-size: 16px; line-height: 1.3; margin: 0; color: #16202c; }
+  .gf-badge { flex: 0 0 auto; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: #e7f0fb; color: #0b5cad; text-transform: uppercase; letter-spacing: .3px; }
+  .gf-badge.pp { background: #e9f7ee; color: #1d7a3e; }
+  .gf-place { color: #5f6b7a; font-size: 13px; margin: 6px 0 0; line-height: 1.4; }
+  .gf-phones { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .gf-call { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; gap: 6px; background: #0b5cad; color: #fff; text-decoration: none; padding: 11px 12px; border-radius: 10px; font-weight: 700; font-size: 15px; }
+  .gf-map { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e6ec; color: #0b5cad; text-decoration: none; padding: 11px 14px; border-radius: 10px; font-weight: 700; font-size: 14px; background: #fff; }
+  .gf-check { margin-top: 10px; background: #fff6e5; color: #b26a00; font-size: 12.5px; padding: 8px 10px; border-radius: 8px; }
+  .gf-empty { text-align: center; color: #5f6b7a; padding: 40px 16px; }
+  .gf-empty b { display: block; color: #16202c; font-size: 16px; margin-bottom: 6px; }
+  .gf-foot { text-align: center; color: #5f6b7a; font-size: 12px; padding: 4px 16px 24px; margin: 0; }
+
+  /* Home page */
+  .hero {
+    position: relative; overflow: hidden; border-radius: 20px; padding: 24px 22px 22px; margin-bottom: 14px;
+    background: linear-gradient(135deg, #0b5cad 0%, #072a66 100%); color: #fff;
+    box-shadow: 0 12px 28px rgba(10, 61, 145, .25);
+  }
+  .hero-text { position: relative; z-index: 1; max-width: 75%; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,.16); padding: 5px 10px; border-radius: 999px; }
+  .hero h2 { margin: 12px 0 6px; font-size: 22px; line-height: 1.25; font-weight: 700; }
+  .hero p { margin: 0 0 16px; font-size: 14px; opacity: .9; }
+  .hero-btn { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #0b5cad; border: 0; padding: 11px 16px; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; }
+  .hero-art { position: absolute; right: -12px; bottom: -18px; font-size: 130px; opacity: .14; color: #fff; transform: rotate(-8deg); }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .mini { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; text-align: center; box-shadow: 0 4px 14px rgba(10,61,145,.05); }
+  .mini i { font-size: 22px; color: var(--blue); }
+  .mini b { display: block; font-size: 18px; margin-top: 4px; color: var(--text); }
+  .mini span { font-size: 12px; color: var(--muted); }
+
+  .section-title { font-size: 15px; font-weight: 700; margin: 18px 4px 10px; color: var(--text); }
+  .steps-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: 0 8px 24px rgba(10,61,145,.06); }
+  .steps-card .step { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; }
+  .steps-card .step + .step { border-top: 1px dashed var(--border); }
+  .steps-card .num { flex: 0 0 30px; height: 30px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .steps-card strong { display: block; font-size: 14px; }
+  .steps-card span { font-size: 13px; color: var(--muted); }
+
+  .contact-card { display: flex; align-items: center; gap: 14px; margin-top: 14px; background: var(--green-soft); border-radius: var(--radius); padding: 14px 16px; }
+  .contact-card i { font-size: 26px; color: var(--green); }
+  .contact-card strong { display: block; font-size: 14px; }
+  .contact-card span { font-size: 13px; color: var(--muted); }
+  .contact-card a { color: var(--green); font-weight: 700; text-decoration: none; }
+
+  /* Sample 2 theme: white header with logos, blue accents */
+  :root { --bg: #eef4fc; }
+  body { background: #eef4fc; color: #072a66; }
+  header#hubHeader.s2-head {
+    background: #ffffff; color: #072a66; padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 14px;
+    border-bottom: 3px solid #0b5cad; box-shadow: none;
+  }
+  .s2-logos { display: flex; align-items: center; justify-content: center; gap: 14px; max-width: 620px; margin: 0 auto; }
+  .s2-logos img { height: 38px; width: auto; display: block; }
+  .s2-divider { width: 1px; height: 32px; background: #d5ddea; display: block; }
+  .intro { padding: 18px 6px 6px; }
+  .intro h2 { margin: 0 0 6px; font-size: 22px; line-height: 1.25; font-weight: 700; color: #0b5cad; }
+  .intro p { margin: 0; font-size: 14px; color: #5f6b7a; line-height: 1.5; }
+  .menu button.primary { background: #0b5cad; border-color: #0b5cad; box-shadow: 0 10px 22px rgba(11,92,173,.35); }
+  .menu button.primary strong, .menu button.primary span, .menu button.primary .chev { color: #fff; }
+  .menu button.primary .ico { background: #ffffff; color: #0b5cad; }
+  .menu button { border-color: #cfe0f5; }
+  .menu .ico.blue { background: #dbeafe; color: #0b5cad; }
+  .menu .ico.amber { background: #cfe3fb; color: #072a66; }
+  .menu .ico.green { background: #dbeafe; color: #0b5cad; }
+  #view-home { padding-top: 6px; }
+  main { margin-top: 0 !important; }
+
+  
+  .home-photo img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-radius: 16px; border: 1px solid #cfe0f5; box-shadow: 0 8px 20px rgba(10,61,145,.12); }
+
+  .model-strip { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 14px; margin: 0 -2px 6px; scrollbar-width: none; }
+  .model-strip::-webkit-scrollbar { display: none; }
+  .model { flex: 0 0 200px; scroll-snap-align: start; background: #fff; border: 1px solid #cfe0f5; border-radius: 16px; padding: 10px 10px 12px; box-shadow: 0 6px 16px rgba(10,61,145,.10); text-align: center; }
+  .model img { width: 100%; aspect-ratio: 4 / 3; height: auto; object-fit: contain; background: #ffffff; display: block; border-radius: 10px; }
+  .model span { display: block; margin-top: 6px; font-size: 13px; font-weight: 700; color: #072a66; }
+
+  .model-stage { position: relative; border-radius: 18px; padding: 12px 8px 4px; margin-bottom: 4px; overflow: hidden; isolation: isolate; background: #0f3f7d url("workshop-bg.jpg") center top / cover no-repeat; box-shadow: 0 10px 24px rgba(10,61,145,.22); }
+  .model-stage .model-strip { margin: 0; padding: 4px 4px 12px; }
+  .model-stage .model { background: transparent; border: 0; box-shadow: none; padding: 0; flex: 0 0 190px; }
+  .model-stage .model img { background: transparent; mix-blend-mode: multiply; border-radius: 0; aspect-ratio: 4 / 3; }
+  .model-stage .model span { display: inline-block; margin-top: 4px; background: rgba(255,255,255,.94); color: #072a66; padding: 4px 10px; border-radius: 999px; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+  .model-stage::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, rgba(7,42,102,.05) 0%, rgba(255,255,255,.55) 70%, rgba(255,255,255,.85) 100%); pointer-events: none; }
+
+  .home-banner { margin: 0 0 18px; }
+  .home-banner img { display: block; width: 100%; height: auto; border-radius: 18px; box-shadow: 0 10px 24px rgba(10,61,145,.22); }
+</style>
+</head>
+<body>
+
+<header id="hubHeader" class="s2-head">
+  <div class="s2-logos">
+    <img src="bajaj-logo.png" alt="Bajaj">
+    <span class="s2-divider"></span>
+    <img src="metl-logo.png" alt="MeTL Group">
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="intro">
+      <h2>Keep your Bajaj running at its best</h2>
+      <p>Book a service, find a garage, or report a problem in minutes.</p>
+    </div>
+
+    <div class="home-banner">
+      <img src="home-banner.jpg" alt="Bajaj Boxer motorcycles and three-wheelers in a service workshop">
+    </div>
+
+    <h3 class="section-title">What do you need today?</h3>
+    <div class="menu">
+      <button data-go="book" class="primary">
+        <div class="ico blue"><i class="ti ti-calendar-event" aria-hidden="true"></i></div>
+        <div><strong>Book Service</strong><span>Reserve a time at your branch</span></div>
+        <i class="ti ti-chevron-right chev" aria-hidden="true"></i>
+      </button>
+      <button data-go="garages">
+        <div class="ico green"><i class="ti ti-map-pin" aria-hidden="true"></i></div>
+        <div><strong>Find Authorized Bajaj Garage</strong><span>Bajaji and Piki Piki garages near you</span></div>
+        <i class="ti ti-chevron-right chev" aria-hidden="true"></i>
+      </button>
+      <button data-go="complaint">
+        <div class="ico amber"><i class="ti ti-tools" aria-hidden="true"></i></div>
+        <div><strong>Service Helpdesk</strong><span>Report a problem with your vehicle</span></div>
+        <i class="ti ti-chevron-right chev" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <h3 class="section-title">How it works</h3>
+    <div class="steps-card">
+      <div class="step"><span class="num">1</span><div><strong>Choose a service</strong><span>Pick book, garage, or help desk.</span></div></div>
+      <div class="step"><span class="num">2</span><div><strong>Fill in your details</strong><span>Your vehicle, branch, and a time that suits you.</span></div></div>
+      <div class="step"><span class="num">3</span><div><strong>We confirm</strong><span>Our team confirms your appointment.</span></div></div>
+    </div>
+
+    <div class="contact-card">
+      <i class="ti ti-headset" aria-hidden="true"></i>
+      <div><strong>Need help now?</strong><span>Call our team on <a href="tel:+255704904011">+255 704 904 011</a></span></div>
+    </div>
+  </section>
+
+  <!-- BOOK SERVICE -->
+  <section class="view" id="view-book">
+    <div class="card" id="bookCard">
+      <h2><i class="ti ti-calendar-event" aria-hidden="true"></i>Book your appointment</h2>
+      <form id="bookForm">
+        <label for="b_name">Full Name <span class="req">*</span></label>
+        <input id="b_name" name="name" required>
+
+        <label for="b_phone">Phone Number <span class="req">*</span></label>
+        <input id="b_phone" name="phone" type="tel" inputmode="tel" required>
+
+        <label for="b_model">Vehicle Model <span class="req">*</span></label>
+        <select id="b_model" name="model" required></select>
+
+        <label for="b_reg">Registration Number <span class="req">*</span></label>
+        <input id="b_reg" name="registration" autocapitalize="characters" required>
+
+        <label for="b_branch">Preferred Branch <span class="req">*</span></label>
+        <select id="b_branch" name="branch" required></select>
+
+        <div class="row">
+          <div>
+            <label for="b_date">Preferred Date <span class="req">*</span></label>
+            <input id="b_date" name="date" type="date" required>
+          </div>
+          <div>
+            <label for="b_time">Preferred Time <span class="req">*</span></label>
+            <select id="b_time" name="time" required disabled><option value="">Select branch and date first</option></select>
+          </div>
+        </div>
+        <div class="muted" id="slotHint" style="margin-top:6px">Booked slots are greyed out.</div>
+
+        <label for="b_service">Service Type (Optional)</label>
+        <select id="b_service" name="serviceType" disabled><option value="">Select a vehicle model first</option></select>
+
+        <label for="b_notes">Notes (Optional)</label>
+        <textarea id="b_notes" name="notes"></textarea>
+
+        <button class="btn" type="submit" id="bookBtn"><i class="ti ti-send" aria-hidden="true"></i>Submit appointment</button>
+      </form>
+    </div>
+    <div class="card done hidden" id="bookDone">
+      <div class="tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+      <h2>Appointment requested</h2>
+      <p class="muted">Our team will confirm your appointment shortly.</p>
+      <button class="link-btn" data-again="book">Book another vehicle</button>
+    </div>
+  </section>
+
+  <!-- GARAGES -->
+  <section class="view" id="view-garages">
+    <div class="gf">
+      <header class="gf-head">
+        <div class="gf-brand">
+          <img src="metl-logo.png" alt="MeTL Group - The People's Brand" onerror="this.style.display='none'">
+          <h1>Bajaj Garage Finder</h1>
+        </div>
+        <div class="gf-search">
+          <input id="garageSearch" type="search" placeholder="Search town, area, district or garage name" autocomplete="off" aria-label="Search garages">
+          <button class="gf-clear" id="garageClear" aria-label="Clear search">&times;</button>
+        </div>
+        <div class="gf-seg" id="divSeg">
+          <button data-v="all" class="on">All services</button>
+          <button data-v="Bajaji">Bajaji</button>
+          <button data-v="Piki Piki">Piki Piki</button>
+        </div>
+      </header>
+      <div class="gf-chips" id="districtChips"></div>
+      <div class="gf-count" id="garageCount"></div>
+      <div class="gf-list" id="garageList"></div>
+      <p class="gf-foot">Tap a number to call. Numbers are shown in +255 international format.</p>
+    </div>
+  </section>
+
+  <!-- COMPLAINT -->
+  <section class="view" id="view-complaint">
+    <div class="card" id="complaintCard">
+      <h2><i class="ti ti-tools" aria-hidden="true"></i>Service help desk</h2>
+      <form id="complaintForm">
+        <label>Vehicle Type <span class="req">*</span></label>
+        <div class="seg">
+          <label><input type="radio" name="vehicleType" value="2-Wheeler" checked><span>🏍️ 2-Wheeler</span></label>
+          <label><input type="radio" name="vehicleType" value="3-Wheeler"><span>🛺 3-Wheeler</span></label>
+        </div>
+
+        <label for="c_name">Customer name <span class="req">*</span></label>
+        <input id="c_name" name="name" required>
+
+        <label for="c_phone">Phone number <span class="req">*</span></label>
+        <input id="c_phone" name="phone" type="tel" inputmode="tel" required>
+
+        <label for="c_location">Location / address</label>
+        <input id="c_location" name="location">
+
+        <label for="c_model">Model <span class="req">*</span></label>
+        <select id="c_model" name="model" required></select>
+
+        <label for="c_reg">Registration no.</label>
+        <input id="c_reg" name="registration" autocapitalize="characters">
+
+        <label for="c_chassis">Chassis No <span class="req">*</span></label>
+        <input id="c_chassis" name="chassis" required>
+
+        <div class="row">
+          <div>
+            <label for="c_odo">Odometer (km)</label>
+            <input id="c_odo" name="odometer" inputmode="numeric">
+          </div>
+          <div>
+            <label for="c_pdate">Purchase / last service date</label>
+            <input id="c_pdate" name="purchaseDate" type="date">
+          </div>
+        </div>
+
+        <label for="c_dealer">Dealer / branch <span class="req">*</span></label>
+        <select id="c_dealer" name="dealer" required></select>
+
+        <label for="c_cat">Complaint category <span class="req">*</span></label>
+        <select id="c_cat" name="category" required></select>
+
+        <label for="c_prio">Priority <span class="req">*</span></label>
+        <select id="c_prio" name="priority" required>
+          <option value="Low">Low</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="High">High (vehicle off road)</option>
+        </select>
+
+        <label for="c_war">Under warranty?</label>
+        <select id="c_war" name="underWarranty">
+          <option>Not sure</option><option>Yes</option><option>No</option>
+        </select>
+
+        <label for="c_desc">Description of the problem <span class="req">*</span></label>
+        <textarea id="c_desc" name="description" required></textarea>
+
+        <label for="c_parts">Spare parts needed (if known)</label>
+        <input id="c_parts" name="spareParts">
+
+        <button class="btn" type="submit" id="complaintBtn"><i class="ti ti-send" aria-hidden="true"></i>Submit complaint</button>
+      </form>
+    </div>
+    <div class="card done hidden" id="complaintDone">
+      <div class="tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+      <h2>Complaint received</h2>
+      <p class="muted">Our help desk will contact you shortly.</p>
+      <button class="link-btn" data-again="complaint">Report another issue</button>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button data-go="home" class="active"><i class="ti ti-home" aria-hidden="true"></i>Home</button>
+  <button data-go="book"><i class="ti ti-calendar-event" aria-hidden="true"></i>Book</button>
+  <button data-go="garages"><i class="ti ti-map-pin" aria-hidden="true"></i>Garages</button>
+  <button data-go="complaint"><i class="ti ti-tools" aria-hidden="true"></i>Help desk</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================
+   CONFIGURATION — paste your Apps Script /exec URL here
+   ===================================================== */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyFKasKmhhTYJoaN-IN0w_Vw1tBoXsWwtwFSUGRMqvShhCZUXFIqPk0kF00S0sVseQe/exec";
+
+const TITLES = { home: "Customer Hub", book: "Book Service", garages: "Find a Garage", complaint: "Service Help Desk" };
+
+const MODELS_2W = ["Boxer 125HD", "Boxer 150HD", "X125", "X150"];
+const MODELS_3W = ["Bajaj Petrol (3-wheeler)", "Bajaj CNG (3-wheeler)"];
+const BRANCHES = ["Gerezani", "Mbagala", "Mbezi", "Gongolamboto", "Arusha", "Mwanza", "Dodoma", "Morogoro", "Iringa", "Mbeya"];
+const SERVICE_TYPES = ["Free service", "Regular service", "Major service", "Repair", "Other"];
+const TIME_SLOTS = [
+  "9:00 AM – 10:00 AM", "10:00 AM – 11:00 AM", "11:00 AM – 12:00 PM", "12:00 PM – 1:00 PM",
+  "1:00 PM – 2:00 PM", "2:00 PM – 3:00 PM", "3:00 PM – 4:00 PM", "4:00 PM – 5:00 PM"
+];
+const COMPLAINT_CATEGORIES = [
+  "KUBADILISHA MAFUTA YA INJINI", "HUDUMA ZA KAWAIDA", "KELELE KWENYE INJINI", "MOSHI USIO WA KAWAIDA",
+  "KUMISI MAFUTA", "TATIZO LA KUWASHA INJINI", "TATIZO LA UMEME", "INJINI KUPOTEZA NGUVU"
+];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const opts = (list, placeholder) =>
+  (placeholder ? `<option value="">${esc(placeholder)}</option>` : "") + list.map((x) => `<option>${esc(x)}</option>`).join("");
+
+/* ---------- Navigation ---------- */
+function show(view) {
+  document.getElementById("hubHeader").style.display = view === "garages" ? "none" : "";
+  document.querySelector("main").style.marginTop = view === "garages" ? "0" : "";
+  document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + view));
+  document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.toggle("active", b.dataset.go === view));
+  $("title").textContent = TITLES[view];
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (view === "garages") loadGarages();
+}
+document.addEventListener("click", (e) => {
+  const go = e.target.closest("[data-go]");
+  if (go) show(go.dataset.go);
+  const again = e.target.closest("[data-again]");
+  if (again) resetForm(again.dataset.again);
+});
+
+/* ---------- Setup selects and date limits ---------- */
+$("b_model").innerHTML = opts([...MODELS_2W, ...MODELS_3W], "Select vehicle model");
+$("b_branch").innerHTML = opts(BRANCHES, "Select branch");
+$("c_dealer").innerHTML = opts(BRANCHES, "Select branch");
+$("c_cat").innerHTML = opts(COMPLAINT_CATEGORIES, "Select complaint");
+$("c_model").innerHTML = opts([...MODELS_2W, ...MODELS_3W], "Select model");
+
+const now = new Date(), pad = (n) => String(n).padStart(2, "0");
+$("b_date").min = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+/* ---------- Booking: models -> service types, branch/date -> slots ---------- */
+$("b_model").addEventListener("change", (e) => {
+  const s = $("b_service");
+  s.innerHTML = e.target.value ? opts(SERVICE_TYPES, "Select service type") : opts([], "Select a vehicle model first");
+  s.disabled = !e.target.value;
+});
+
+let slotReq = 0;
+async function refreshSlots() {
+  const branch = $("b_branch").value, date = $("b_date").value;
+  if (!branch || !date) {
+    $("b_time").innerHTML = opts([], "Select branch and date first");
+    $("b_time").disabled = true;
+    return;
+  }
+  const id = ++slotReq;
+  $("slotHint").textContent = "Checking available slots…";
+  let taken = [];
+  try {
+    const r = await fetch(`${APPS_SCRIPT_URL}?action=slots&branch=${encodeURIComponent(branch)}&date=${encodeURIComponent(date)}`);
+    taken = (await r.json()).taken || [];
+    $("slotHint").textContent = "Booked slots are greyed out.";
+  } catch {
+    $("slotHint").textContent = "Could not check slots. You can still pick a time.";
+  }
+  if (id !== slotReq) return;
+  $("b_time").innerHTML = `<option value="">Select time</option>` + TIME_SLOTS.map((t) =>
+    `<option value="${esc(t)}" ${taken.includes(t) ? "disabled" : ""}>${esc(t)}${taken.includes(t) ? " (booked)" : ""}</option>`
+  ).join("");
+  $("b_time").disabled = false;
+}
+$("b_branch").addEventListener("change", refreshSlots);
+$("b_date").addEventListener("change", refreshSlots);
+
+/* ---------- Complaint: vehicle type -> models ---------- */
+document.querySelectorAll('input[name="vehicleType"]').forEach((r) =>
+  r.addEventListener("change", () => {
+    const list = r.value === "3-Wheeler" ? MODELS_3W : MODELS_2W;
+    $("c_model").innerHTML = opts(list, "Select model");
+  })
+);
+$("c_model").innerHTML = opts(MODELS_2W, "Select model");
+
+const GARAGES = [{"id": 1, "name": "MeTL Branch", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Gerezani", "phones": ["0793505774"], "needs_check": false}, {"id": 2, "name": "MeTL Branch", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Mbezi", "phones": ["0742424077"], "needs_check": false}, {"id": 3, "name": "MeTL Branch", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Mbagala", "phones": ["0755858785"], "needs_check": false}, {"id": 4, "name": "MeTL Branch", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "G-Mboto", "phones": ["0621384754"], "needs_check": false}, {"id": 5, "name": "Masawe spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "MAGUFULI- Bus station", "phones": ["0715264453"], "needs_check": false}, {"id": 6, "name": "SHIJA SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kigamboni", "location": "Near gapco station", "phones": ["0744212762"], "needs_check": false}, {"id": 7, "name": "Zein auto spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kigamboni", "location": "Vijibweni", "phones": ["0692443565", "0613699444"], "needs_check": false}, {"id": 8, "name": "Litunji garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Mtoni mtongani", "phones": ["0687512177", "0658443764"], "needs_check": false}, {"id": 9, "name": "Team garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Yombo dovya shuleni", "phones": ["0789887464"], "needs_check": false}, {"id": 10, "name": "Kizimkazi spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Buza mamakibonge", "phones": ["0624001129"], "needs_check": false}, {"id": 11, "name": "SY SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Mbagala kilungule", "phones": ["0784653909"], "needs_check": false}, {"id": 12, "name": "Rweyemamu spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Mbagala kwambiku", "phones": ["0767938246"], "needs_check": false}, {"id": 13, "name": "Medi spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Buza kanisani", "phones": ["0777301445"], "needs_check": false}, {"id": 14, "name": "Mwinuka auto spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Kiwalani", "phones": ["0693045513"], "needs_check": false}, {"id": 15, "name": "KILAWE SPARES PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Kipawa", "phones": ["0619138365", "0694014370"], "needs_check": false}, {"id": 16, "name": "Swalehe garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Tazara road", "phones": ["0784433076"], "needs_check": false}, {"id": 17, "name": "God win auto spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Ilala", "phones": ["0717662938"], "needs_check": false}, {"id": 18, "name": "Peter garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Chanika", "phones": ["0715570762"], "needs_check": false}, {"id": 19, "name": "URASA GARAGE", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Msongola", "phones": ["0678351924"], "needs_check": false}, {"id": 20, "name": "ANORD GARAGE & SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Gongolamboto", "phones": ["0789935174", "0773310569"], "needs_check": false}, {"id": 21, "name": "RY ENTERPRISES", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Kinyerezi", "phones": ["0769800015", "0710800015"], "needs_check": false}, {"id": 22, "name": "GLORY SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Msigani", "phones": ["0653109520"], "needs_check": false}, {"id": 23, "name": "V.SMART SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Mbezi magufuli", "phones": ["0760044904", "0693151581"], "needs_check": false}, {"id": 24, "name": "MANKA GARAGE & SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Saranga", "phones": ["0650992053"], "needs_check": false}, {"id": 25, "name": "KABUMATTI BAJAJ SPARE PARTS & SERVICE", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Toangoma", "phones": ["0715795444"], "needs_check": false}, {"id": 26, "name": "AMK SPARE PARTS & SERVICE", "division": "Bajaji", "region": "Dar es Salaam", "district": "Pwani", "location": "Kisemvule", "phones": ["0766035767"], "needs_check": false}, {"id": 27, "name": "Mtopa spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Pwani", "location": "Mkuranga", "phones": ["0629030391"], "needs_check": false}, {"id": 28, "name": "David RE Bajaj service centre", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kigamboni", "location": "Round about", "phones": ["0716982782"], "needs_check": false}, {"id": 29, "name": "NIGA BOY SPARE PARTS", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Lumo mwanzo", "phones": ["0672926344"], "needs_check": false}, {"id": 30, "name": "Msofe Garage and spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Kinyerezi", "phones": ["0711577432"], "needs_check": false}, {"id": 31, "name": "CHIEF SPARE PARTS & GARAGE", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Kampala university", "phones": ["0656639172"], "needs_check": false}, {"id": 32, "name": "FAHIM BEY SPARE PARTS & SERVICE", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Chamazi", "phones": ["0614339848"], "needs_check": false}, {"id": 33, "name": "Daniel garage & Ngosha family spare parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Buza mamakibonge", "phones": ["0718229438", "0682035010"], "needs_check": false}, {"id": 34, "name": "Ombeni Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Mbagala zakhiem", "phones": ["0767767570"], "needs_check": false}, {"id": 35, "name": "Mudi Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Kiwalani kijiwe samli", "phones": ["0712280006"], "needs_check": false}, {"id": 36, "name": "Lessroma Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Mbezi louis", "phones": ["0716492615"], "needs_check": false}, {"id": 37, "name": "Denis Auto Spares Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Tegeta wazo hill", "phones": ["0656780120"], "needs_check": false}, {"id": 38, "name": "Janjuda Auto Spare Parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Kimara stop over", "phones": ["0652424951"], "needs_check": false}, {"id": 39, "name": "Mwingereza Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ilala", "location": "Banana Hali ya hewa", "phones": ["0785636963"], "needs_check": false}, {"id": 40, "name": "Sumayi Auto Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Mwananyamala-maduka matatu", "phones": [], "needs_check": true}, {"id": 41, "name": "Mbowelo Auto Spare", "division": "Bajaji", "region": "Dar es Salaam", "district": "Temeke", "location": "Stereo", "phones": ["0655941497"], "needs_check": false}, {"id": 42, "name": "Frank Auto Spares Parts", "division": "Bajaji", "region": "Dar es Salaam", "district": "Ubungo", "location": "Urafiki", "phones": ["0712865718"], "needs_check": false}, {"id": 43, "name": "Damiano Motors & Garage Ltd", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Manyanya", "phones": ["0769111873", "0768174901"], "needs_check": false}, {"id": 44, "name": "Baraka Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kigamboni", "location": "Kisiwani", "phones": ["0785015415"], "needs_check": false}, {"id": 45, "name": "Discount Garage", "division": "Bajaji", "region": "Dar es Salaam", "district": "Kigamboni", "location": "Round about", "phones": ["0692041067"], "needs_check": false}, {"id": 46, "name": "MeTL Branch", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ilala", "location": "Gerezani", "phones": ["0793505774"], "needs_check": false}, {"id": 47, "name": "MeTL Branch", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Mbezi", "phones": ["0742424077"], "needs_check": false}, {"id": 48, "name": "MeTL Branch", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Temeke", "location": "Mbagala", "phones": ["0755858785"], "needs_check": false}, {"id": 49, "name": "MeTL Branch", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ilala", "location": "G-Mboto", "phones": ["0621384754"], "needs_check": false}, {"id": 50, "name": "BABA GODFREY", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Mbezi", "phones": ["0659144519"], "needs_check": false}, {"id": 51, "name": "BEI BORA SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Kimara Matosa", "phones": ["0715208060"], "needs_check": false}, {"id": 52, "name": "BULE GARAGE", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Kigogo", "phones": ["0712504603"], "needs_check": false}, {"id": 53, "name": "BYSER AUTO SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ilala", "location": "Tabata - Kimanga", "phones": ["0657914478"], "needs_check": false}, {"id": 54, "name": "JEMBE SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Makongo Juu", "phones": ["0764167755"], "needs_check": false}, {"id": 55, "name": "JOSE SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Sinza Makaburuni", "phones": ["0755342392"], "needs_check": false}, {"id": 56, "name": "KICHUNA GARAGE", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Sinza", "phones": ["0699365752"], "needs_check": false}, {"id": 57, "name": "MALO GARAGE", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Mwananyamala", "phones": ["0689918326"], "needs_check": false}, {"id": 58, "name": "MWANAKWELEKWE SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Temeke", "location": "Mbagala", "phones": ["0784835753"], "needs_check": false}, {"id": 59, "name": "MWANJOO SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Tegeta- Dawasa", "phones": ["0714828206"], "needs_check": false}, {"id": 60, "name": "HAMISI NGEREZA SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ilala", "location": "Segerea", "phones": ["0715450098"], "needs_check": false}, {"id": 61, "name": "TUMAINI SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Studio", "phones": ["0673429309"], "needs_check": false}, {"id": 62, "name": "NGOWI INVESTMENT", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Ubungo -Maziwa", "phones": ["0713547118"], "needs_check": false}, {"id": 63, "name": "MANEGE INVESTMENT", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Studio", "phones": ["0769111873"], "needs_check": false}, {"id": 64, "name": "TUNGI MSIKITINI GARAGE", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kigamboni", "location": "Tungi", "phones": ["0714647281"], "needs_check": false}, {"id": 65, "name": "LESSOROMA GARAGE", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Mbezi", "phones": ["0716492615"], "needs_check": false}, {"id": 66, "name": "DANIEL GARAGE & NGOSHA", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Temeke", "location": "Buza", "phones": ["0718229438"], "needs_check": false}, {"id": 67, "name": "EMMANUEL GARAGE", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Kinondoni", "location": "Mikocheni", "phones": ["0653039638"], "needs_check": false}, {"id": 68, "name": "PETER SPARE PARTS", "division": "Piki Piki", "region": "Dar es Salaam", "district": "Ubungo", "location": "Ubungo -Maziwa", "phones": ["0719013897"], "needs_check": false}, {"id": 69, "name": "MWANAKWELEKWE SPARE PARTS", "division": "Piki Piki", "region": "Pwani", "district": "Mkuranga", "location": "Mwandege", "phones": ["0784835753"], "needs_check": false}, {"id": 70, "name": "ADAM/MUBA SPARE PARTS", "division": "Piki Piki", "region": "Pwani", "district": "Mkuranga", "location": "Kisemvule", "phones": ["0696770507"], "needs_check": false}, {"id": 71, "name": "BAROZI SPARE PARTS", "division": "Piki Piki", "region": "Pwani", "district": "Mkuranga", "location": "Vikindu", "phones": ["0786889286"], "needs_check": true}, {"id": 72, "name": "BWAWANI GARAGE", "division": "Piki Piki", "region": "Pwani", "district": "Kibaha", "location": "Kibaha -Mile Moja", "phones": ["0654086863"], "needs_check": false}, {"id": 73, "name": "MAIMU SPARE PARTS", "division": "Piki Piki", "region": "Pwani", "district": "Mkuranga", "location": "Mkuranga", "phones": ["0652642134"], "needs_check": false}, {"id": 74, "name": "MKUNYULYA MOTORCYCLE", "division": "Piki Piki", "region": "Pwani", "district": "Rufiji", "location": "Ikwiriri", "phones": ["0786085450"], "needs_check": false}, {"id": 75, "name": "MOHAMMED GARAGE", "division": "Piki Piki", "region": "Pwani", "district": "Bagamoyo", "location": "Bagamoyo", "phones": ["0758101000"], "needs_check": false}, {"id": 76, "name": "NJOGORO SPARE PARTS", "division": "Piki Piki", "region": "Pwani", "district": "Mkuranga", "location": "Chatembo", "phones": ["0683100200"], "needs_check": false}, {"id": 77, "name": "SAID GARAGE", "division": "Piki Piki", "region": "Pwani", "district": "Kibaha", "location": "Picha Ya Ndege", "phones": ["0659527591"], "needs_check": false}];
+
+/* ---------- Garages (same layout as the Bajaj Garage Finder page) ---------- */
+const gf = { q: "", division: "all", district: "all" };
+const gfNorm = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+  .replace(/[^a-z0-9+ ]/g, " ").replace(/\s+/g, " ").trim();
+const GF_DISTRICTS = [...new Set(GARAGES.map((g) => g.district))].filter(Boolean).sort();
+const GF_INDEX = GARAGES.map((g) => ({
+  g,
+  h: gfNorm([g.name, g.location, g.district, g.region, g.division, g.phones.join(" ")].join(" "))
+}));
+const fmtPhone = (p) => "+255 " + p.slice(1).replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+
+function loadGarages() {
+  renderGarages();
+}
+
+function renderGarages() {
+  const terms = gfNorm(gf.q).split(" ").filter(Boolean);
+  const results = GF_INDEX
+    .filter((e) =>
+      (gf.division === "all" || e.g.division === gf.division) &&
+      (gf.district === "all" || e.g.district === gf.district) &&
+      terms.every((t) => e.h.includes(t)))
+    .map((e) => e.g);
+
+  $("garageClear").classList.toggle("show", gf.q.length > 0);
+  $("garageCount").textContent = results.length + (results.length === 1 ? " garage" : " garages") + " found";
+  $("districtChips").innerHTML = ["all", ...GF_DISTRICTS].map((d) =>
+    `<button class="gf-chip${gf.district === d ? " on" : ""}" data-d="${esc(d)}">${d === "all" ? "All districts" : esc(d)}</button>`
+  ).join("");
+
+  $("garageList").innerHTML = results.length ? results.map((g) => {
+    const badge = g.division === "Piki Piki" ? "gf-badge pp" : "gf-badge";
+    const calls = g.phones.map((p) =>
+      `<a class="gf-call" href="tel:+255${esc(p.slice(1))}" aria-label="Call ${esc(g.name)} ${esc(fmtPhone(p))}">&#9742; ${esc(fmtPhone(p))}</a>`
+    ).join("");
+    const q = encodeURIComponent(`${g.name}, ${g.location}, ${g.district}, ${g.region}, Tanzania`);
+    const check = g.needs_check ? '<div class="gf-check">Phone number needs to be confirmed. Please check before calling.</div>' : "";
+    return `
+    <article class="gf-card">
+      <div class="gf-top"><p class="gf-name">${esc(g.name)}</p><span class="${badge}">${esc(g.division)}</span></div>
+      <p class="gf-place">${esc(g.location)} &middot; ${esc(g.district)}, ${esc(g.region)}</p>
+      <div class="gf-phones">${calls}<a class="gf-map" href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Map</a></div>
+      ${check}
+    </article>`;
+  }).join("") : '<div class="gf-empty"><b>No garage found</b>Try a different word, such as the area name or district.</div>';
+}
+
+$("garageSearch").addEventListener("input", (e) => { gf.q = e.target.value; renderGarages(); });
+$("garageClear").addEventListener("click", () => {
+  gf.q = "";
+  $("garageSearch").value = "";
+  renderGarages();
+  $("garageSearch").focus();
+});
+$("divSeg").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  gf.division = b.dataset.v;
+  [...$("divSeg").children].forEach((x) => x.classList.toggle("on", x === b));
+  renderGarages();
+});
+$("districtChips").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  gf.district = b.dataset.d;
+  renderGarages();
+});
+
+/* ---------- Submissions ---------- */
+async function post(payload) {
+  const r = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids CORS preflight
+    body: JSON.stringify(payload)
+  });
+  return r.json();
+}
+function formData(form) {
+  return Object.fromEntries(new FormData(form).entries());
+}
+
+$("bookForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("bookBtn");
+  btn.disabled = true; btn.textContent = "Submitting…";
+  try {
+    const res = await post({ action: "book", ...formData(e.target) });
+    if (res.ok) {
+      $("bookCard").classList.add("hidden");
+      $("bookDone").classList.remove("hidden");
+    } else if (res.error === "slot_taken") {
+      toast("That slot was just booked. Please choose another time.");
+      refreshSlots();
+    } else {
+      toast("Could not submit. Please try again.");
+    }
+  } catch {
+    toast("Network error. Check your connection and try again.");
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i>Submit appointment';
+  }
+});
+
+$("complaintForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("complaintBtn");
+  btn.disabled = true; btn.textContent = "Submitting…";
+  try {
+    const res = await post({ action: "complaint", ...formData(e.target) });
+    if (res.ok) {
+      $("complaintCard").classList.add("hidden");
+      $("complaintDone").classList.remove("hidden");
+    } else {
+      toast("Please fill in all required fields.");
+    }
+  } catch {
+    toast("Network error. Check your connection and try again.");
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i>Submit complaint';
+  }
+});
+
+function resetForm(which) {
+  if (which === "book") {
+    $("bookForm").reset();
+    $("b_time").innerHTML = opts([], "Select branch and date first");
+    $("b_time").disabled = true;
+    $("b_service").innerHTML = opts([], "Select a vehicle model first");
+    $("b_service").disabled = true;
+    $("bookDone").classList.add("hidden");
+    $("bookCard").classList.remove("hidden");
+  } else {
+    $("complaintForm").reset();
+    $("c_model").innerHTML = opts(MODELS_2W, "Select model");
+    $("complaintDone").classList.add("hidden");
+    $("complaintCard").classList.remove("hidden");
+  }
+}
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+/* ---------- Service worker (offline shell) ---------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
